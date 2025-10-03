@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Prediksi Efisiensi BBM - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                    <h1 class="card-title">Prediksi Efisiensi Bahan Bakar</h1>
+                    <p class="text-muted">Masukkan berat mobil untuk memprediksi efisiensi bahan bakar (MPG)</p>
+                </div>
+
+                <form id="predictionForm">
+                    <div class="mb-4">
+                        <label for="weight" class="form-label">
+                            <i class="fas fa-weight-hanging"></i> Berat Mobil (lbs)
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               id="weight" 
+                               name="weight" 
+                               placeholder="Contoh: 3500"
+                               min="1" 
+                               max="10000" 
+                               required>
+                        <div class="form-text">
+                            Masukkan berat mobil dalam pound (lbs). Contoh: 3500 lbs
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calculator"></i> Prediksi MPG
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Loading indicator -->
+                <div class="loading text-center mt-4">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memproses prediksi...</p>
+                </div>
+
+                <!-- Results will be displayed here -->
+                <div id="result"></div>
+            </div>
+        </div>
+
+        <!-- Information Cards -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Akurasi Tinggi</h5>
+                        <p class="card-text">Model menggunakan regresi linear dengan akurasi R² = 0.65</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-database fa-2x text-info mb-3"></i>
+                        <h5 class="card-title">Data Terpercaya</h5>
+                        <p class="card-text">Dilatih dengan dataset Auto MPG yang terpercaya</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bolt fa-2x text-warning mb-3"></i>
+                        <h5 class="card-title">Prediksi Cepat</h5>
+                        <p class="card-text">Hasil prediksi dalam hitungan detik</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('#predictionForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const weight = $('#weight').val();
+        
+        if (!weight || weight <= 0) {
+            showError('Masukkan berat mobil yang valid');
+            return;
+        }
+        
+        // Show loading
+        $('.loading').show();
+        $('#result').empty();
+        
+        // Make prediction request
+        $.ajax({
+            url: '/predict',
+            method: 'POST',
+            data: {
+                weight: weight
+            },
+            success: function(response) {
+                $('.loading').hide();
+                if (response.success) {
+                    showResult(response);
+                } else {
+                    showError(response.error);
+                }
+            },
+            error: function() {
+                $('.loading').hide();
+                showError('Terjadi kesalahan pada server');
+            }
+        });
+    });
+    
+    function showResult(data) {
+        const resultHtml = `
+            <div class="result-card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-info-circle"></i> Hasil Prediksi</h4>
+                        <p><strong>Berat Mobil:</strong> ${data.weight} lbs</p>
+                        <p><strong>Prediksi MPG:</strong> <span class="badge bg-light text-dark fs-6">${data.predicted_mpg}</span></p>
+                        <p><strong>Interpretasi:</strong> <span style="color: ${data.color}">${data.interpretation}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-cogs"></i> Info Model</h4>
+                        <p><strong>Intercept:</strong> ${data.model_info.intercept}</p>
+                        <p><strong>Koefisien:</strong> ${data.model_info.coefficient}</p>
+                        <small class="text-light">Model: y = ${data.model_info.intercept} + ${data.model_info.coefficient} × weight</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        $('#result').html(resultHtml);
+    }
+    
+    function showError(message) {
+        const errorHtml = `
+            <div class="alert alert-danger mt-3" role="alert">
+                <i class="fas fa-exclamation-triangle"></i> ${message}
+            </div>
+        `;
+        $('#result').html(errorHtml);
+    }
+});
+</script>
+{% endblock %}

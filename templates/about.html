@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Tentang Aplikasi - Prediksi MPG{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-info-circle fa-3x text-primary mb-3"></i>
+                    <h1 class="card-title">Tentang Aplikasi Prediksi MPG</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3><i class="fas fa-brain"></i> Deskripsi Model</h3>
+                        <p class="lead">
+                            Aplikasi ini menggunakan model regresi linear sederhana untuk memprediksi 
+                            efisiensi bahan bakar (MPG - Miles Per Gallon) berdasarkan berat mobil.
+                        </p>
+                        
+                        <h4><i class="fas fa-chart-bar"></i> Metodologi</h4>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <strong>Dataset:</strong> Auto MPG Dataset (392 sampel)
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Algoritma:</strong> Linear Regression dari scikit-learn
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Variabel Input:</strong> Berat mobil (weight) dalam pound
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Variabel Output:</strong> Efisiensi bahan bakar (MPG)
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Akurasi:</strong> R² = 0.6533, RMSE = 4.2064
+                            </li>
+                        </ul>
+
+                        <h4><i class="fas fa-cogs"></i> Rumus Model</h4>
+                        <div class="alert alert-info">
+                            <strong>MPG = Intercept + (Koefisien × Berat Mobil)</strong><br>
+                            <small>MPG = 47.2005 + (-0.0079 × Berat)</small>
+                        </div>
+
+                        <h4><i class="fas fa-lightbulb"></i> Interpretasi Hasil</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
+                                        <h6>MPG < 15</h6>
+                                        <small>Efisiensi Rendah</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-warning">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-minus-circle text-warning fa-2x mb-2"></i>
+                                        <h6>15 ≤ MPG < 25</h6>
+                                        <small>Efisiensi Sedang</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                        <h6>MPG ≥ 25</h6>
+                                        <small>Efisiensi Tinggi</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5><i class="fas fa-tools"></i> Teknologi</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fab fa-python text-primary"></i> Python</li>
+                                    <li><i class="fas fa-flask text-success"></i> Flask</li>
+                                    <li><i class="fas fa-chart-line text-info"></i> scikit-learn</li>
+                                    <li><i class="fas fa-database text-warning"></i> pandas</li>
+                                    <li><i class="fas fa-calculator text-danger"></i> numpy</li>
+                                    <li><i class="fab fa-html5 text-orange"></i> HTML5</li>
+                                    <li><i class="fab fa-css3-alt text-blue"></i> CSS3</li>
+                                    <li><i class="fab fa-js-square text-warning"></i> JavaScript</li>
+                                    <li><i class="fab fa-bootstrap text-purple"></i> Bootstrap</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h5><i class="fas fa-download"></i> API Endpoint</h5>
+                                <p class="small">Anda juga dapat menggunakan API untuk prediksi:</p>
+                                <code class="small">
+                                    POST /api/predict<br>
+                                    Content-Type: application/json<br>
+                                    {"weight": 3500}
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Prediksi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
