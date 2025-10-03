@@ -22,7 +22,7 @@ wheels/
 MANIFEST
 
 # Virtual Environment
-venv/
+# venv/  # Commented out for Railway deployment
 env/
 ENV/
 env.bak/
