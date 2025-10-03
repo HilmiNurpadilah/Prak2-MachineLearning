@@ -18,16 +18,37 @@ else:
 @app.route('/')
 def home():
     """Halaman utama aplikasi"""
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        # Fallback jika template tidak ada
+        return f"""
+        <html>
+        <head><title>MPG Prediction App</title></head>
+        <body>
+            <h1>MPG Prediction App</h1>
+            <p>Status: Running</p>
+            <p>Model Loaded: {model is not None}</p>
+            <p>Error: {str(e)}</p>
+        </body>
+        </html>
+        """, 200
 
 @app.route('/health')
 def health():
     """Health check endpoint untuk Railway"""
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Flask MPG Prediction App is running',
-        'model_loaded': model is not None
-    }), 200
+    try:
+        return jsonify({
+            'status': 'healthy',
+            'message': 'Flask MPG Prediction App is running',
+            'model_loaded': model is not None,
+            'timestamp': pd.Timestamp.now().isoformat()
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e)
+        }), 500
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -142,15 +163,34 @@ def api_predict():
 
 if __name__ == '__main__':
     import os
+    import sys
+    
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
-    print(f"Starting Flask app on port {port}")
+    print("=" * 50)
+    print("FLASK MPG PREDICTION APP STARTUP")
+    print("=" * 50)
+    print(f"Port: {port}")
     print(f"Debug mode: {debug}")
     print(f"Model loaded: {model is not None}")
+    print(f"Python version: {sys.version}")
+    print(f"Working directory: {os.getcwd()}")
+    print(f"Files in directory: {os.listdir('.')}")
+    
+    if os.path.exists('templates'):
+        print(f"Templates directory exists: {os.listdir('templates')}")
+    else:
+        print("Templates directory NOT found!")
+    
+    print("=" * 50)
     
     try:
+        print("Starting Flask application...")
         app.run(debug=debug, host='0.0.0.0', port=port)
     except Exception as e:
-        print(f"Error starting Flask app: {e}")
-        raise
+        print(f"CRITICAL ERROR starting Flask app: {e}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
