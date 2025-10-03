@@ -20,6 +20,15 @@ def home():
     """Halaman utama aplikasi"""
     return render_template('index.html')
 
+@app.route('/health')
+def health():
+    """Health check endpoint untuk Railway"""
+    return jsonify({
+        'status': 'healthy',
+        'message': 'Flask MPG Prediction App is running',
+        'model_loaded': model is not None
+    }), 200
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """Endpoint untuk prediksi MPG berdasarkan berat mobil"""
@@ -135,4 +144,13 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
-    app.run(debug=debug, host='0.0.0.0', port=port)
+    
+    print(f"Starting Flask app on port {port}")
+    print(f"Debug mode: {debug}")
+    print(f"Model loaded: {model is not None}")
+    
+    try:
+        app.run(debug=debug, host='0.0.0.0', port=port)
+    except Exception as e:
+        print(f"Error starting Flask app: {e}")
+        raise
